@@ -23,7 +23,7 @@
 
 ### 设计决策（已拍板）
 - [x] 账号方式：用户名+密码（纯本地，无第三方成本）
-- [x] 旧数据：专门做 legacy 专属账号（用户名 legacy，口令 legacy@2026），45 条历史记录全部归入
+- [x] 旧数据：专门做 legacy 专属账号（用户名 legacy，口令取环境变量 LEGACY_PASSWORD，未配置用默认值），45 条历史记录全部归入
 - [x] 登录态：随机 token 存 localStorage（X-Auth-Token header）
 
 ### 实施结果（全部验证通过）

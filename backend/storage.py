@@ -1,5 +1,6 @@
 """SQLite 存储：任务、简历版本、报告版本、用户"""
 import hashlib
+import os
 import secrets
 import sqlite3
 from pathlib import Path
@@ -8,6 +9,7 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 DB_PATH = DATA_DIR / "resume_tool.db"
 
 LEGACY_USERNAME = "legacy"  # 旧数据专属账号（无主任务自动归入）
+LEGACY_PASSWORD = os.environ.get("LEGACY_PASSWORD", "legacy@2026")  # 口令优先取环境变量，未配置用默认
 
 
 def _conn():
@@ -117,20 +119,20 @@ def update_last_login(user_id):
 
 def ensure_legacy_account() -> int:
     """确保旧数据专属账号存在；把当前所有无主任务归入它。返回 legacy 用户 id。
-    固定登录口令：legacy / legacy@2026（可在个人中心登录查看旧记录，登录后可自行修改）"""
+    登录口令取环境变量 LEGACY_PASSWORD（默认 legacy@2026），可在个人中心登录查看旧记录，登录后可自行修改"""
     conn = _conn()
     row = conn.execute("SELECT * FROM users WHERE username=?", (LEGACY_USERNAME,)).fetchone()
     if not row:
         cur = conn.execute(
             "INSERT INTO users(username,password_hash,nickname) VALUES(?,?,?)",
-            (LEGACY_USERNAME, hash_password("legacy@2026", None), "旧数据归档账号"))
+            (LEGACY_USERNAME, hash_password(LEGACY_PASSWORD, None), "旧数据归档账号"))
         uid = cur.lastrowid
     else:
         uid = row["id"]
         # 若 legacy 是随机密码创建的旧版本，统一重置为固定口令，保证可登录
         cur = conn.execute(
             "UPDATE users SET password_hash=? WHERE id=?",
-            (hash_password("legacy@2026", None), uid))
+            (hash_password(LEGACY_PASSWORD, None), uid))
     conn.execute("UPDATE tasks SET user_id=? WHERE user_id IS NULL", (uid,))
     conn.commit()
     conn.close()
