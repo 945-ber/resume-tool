@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简历智造 · 管理后台</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:#f4f6fa;color:#2b3340;-webkit-font-smoothing:antialiased;animation:adFadeIn .45s ease}
+  @keyframes adFadeIn{from{opacity:0}to{opacity:1}}
+  [v-cloak]{display:none}
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#f4f6fa 0%,#eef2fb 100%)}
+  .login-card{background:#fff;border:1px solid #e6eaf2;border-radius:14px;padding:40px 42px;width:340px;box-shadow:0 14px 40px rgba(60,90,180,.08)}
+  .login-logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#4f7cff,#7b5cff);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 6px 16px rgba(79,124,255,.28)}
+  .login-logo svg{width:26px;height:26px}
+  .login-title{text-align:center;font-size:17px;font-weight:700;color:#1f2733}
+  .login-sub{text-align:center;font-size:11.5px;color:#9aa4b5;margin:6px 0 26px;letter-spacing:.4px}
+  .login-input{width:100%;height:44px;border:1px solid #dde3ec;border-radius:9px;padding:0 14px;font-size:14px;outline:none;transition:.2s;color:#2b3340}
+  .login-input:focus{border-color:#4f7cff;box-shadow:0 0 0 3px rgba(79,124,255,.14)}
+  .login-btn{width:100%;height:44px;margin-top:14px;border:0;border-radius:9px;background:linear-gradient(135deg,#4f7cff,#6b5cff);color:#fff;font-size:14.5px;font-weight:600;cursor:pointer;transition:.2s}
+  .login-btn:hover{opacity:.92;transform:translateY(-1px)}
+  .login-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+  .login-err{color:#e5484d;font-size:12.5px;margin-top:12px;text-align:center}
+  .login-back{margin-top:18px;text-align:center;font-size:12px}
+  .login-back a{color:#8b95a7;text-decoration:none}
+  .login-back a:hover{color:#4f7cff}
+  .shell{min-height:100vh;max-width:1180px;margin:0 auto;padding:0 24px 40px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:18px 0 14px;border-bottom:1px solid #e6eaf2}
+  .brand{display:flex;align-items:center;gap:10px;font-size:15.5px;font-weight:700;color:#1f2733}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,#4f7cff,#7b5cff);box-shadow:0 0 0 4px rgba(79,124,255,.16)}
+  .brand small{font-size:11px;color:#a5aebb;font-weight:400;margin-left:2px}
+  .top-right{display:flex;align-items:center;gap:14px}
+  .session{font-size:12px;color:#8b95a7}
+  .session b{color:#4f7cff;font-weight:600}
+  .logout-btn{border:1px solid #dde3ec;background:#fff;color:#5b6472;border-radius:8px;padding:7px 16px;font-size:12.5px;cursor:pointer;transition:.15s}
+  .logout-btn:hover{border-color:#e5484d;color:#e5484d}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin:20px 0 8px}
+  .stat-card{background:#fff;border:1px solid #e6eaf2;border-radius:11px;padding:16px 18px;transition:.2s}
+  .stat-card:hover{box-shadow:0 6px 18px rgba(60,90,180,.07);transform:translateY(-1px)}
+  .stat-label{font-size:11.5px;color:#9aa4b5;display:flex;align-items:center;gap:6px}
+  .stat-label svg{width:13px;height:13px;opacity:.7}
+  .stat-value{font-size:24px;font-weight:700;color:#1f2733;margin-top:7px;line-height:1.1}
+  .stat-value small{font-size:12px;color:#9aa4b5;font-weight:400}
+  .stat-note{font-size:10.5px;color:#a5aebb;margin-top:4px}
+  .stat-card.warn .stat-value{color:#e5484d}
+  .stat-card.ok .stat-value{color:#2fa84f}
+  .tabs{display:flex;gap:4px;background:#e8ecf4;border-radius:10px;padding:4px;margin:16px 0}
+  .tabs button{border:0;background:transparent;padding:9px 22px;border-radius:8px;font-size:13px;color:#5b6472;cursor:pointer;transition:.15s;font-weight:500}
+  .tabs button.on{background:#fff;color:#3d6ef0;font-weight:600;box-shadow:0 2px 8px rgba(60,90,180,.10)}
+  .panel{background:#fff;border:1px solid #e6eaf2;border-radius:12px;padding:20px 22px;min-height:320px}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .panel-title{font-size:14.5px;font-weight:700;color:#1f2733}
+  .panel-title small{font-size:11.5px;color:#9aa4b5;font-weight:400;margin-left:8px}
+  .refresh-btn{border:1px solid #dde3ec;background:#fff;color:#5b6472;border-radius:8px;padding:6px 14px;font-size:12px;cursor:pointer;transition:.15s}
+  .refresh-btn:hover{border-color:#4f7cff;color:#4f7cff}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{text-align:left;color:#8b95a7;font-weight:600;padding:9px 10px;border-bottom:1px solid #eef1f6;font-size:11.5px;white-space:nowrap}
+  td{padding:9px 10px;border-bottom:1px solid #f2f4f9;color:#3a4350;vertical-align:top}
+  tr:hover td{background:#fafbfe}
+  .mono{font-family:Consolas,Menlo,monospace;font-size:12px;color:#5b6472}
+  .tag{display:inline-block;background:#eef3ff;color:#3d6ef0;border-radius:5px;padding:1px 8px;font-size:11px;font-weight:600;margin-right:4px}
+  .tag.gray{background:#f0f2f6;color:#8b95a7}
+  .tag.green{background:#e8f7ee;color:#2fa84f}
+  .tag.red{background:#fdecec;color:#e5484d}
+  .tag.orange{background:#fef3e2;color:#d97b06}
+  .link-btn{color:#4f7cff;text-decoration:none;font-size:12px;cursor:pointer;white-space:nowrap}
+  .link-btn:hover{text-decoration:underline}
+  .link-btn.danger{color:#e5484d}
+  .empty{text-align:center;color:#a5aebb;padding:48px 0;font-size:13px}
+  .loading-tip{text-align:center;color:#9aa4b5;padding:36px 0;font-size:12.5px}
+  .user-badge{display:inline-flex;align-items:center;gap:6px}
+  .avatar{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#4f7cff,#7b5cff);color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ver-list{margin:2px 0;display:flex;flex-direction:column;gap:4px}
+  .ver-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#5b6472}
+  .ver-row .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:14px}
+  .photo-cell{background:#f8fafd;border:1px solid #eef1f6;border-radius:10px;padding:8px;cursor:zoom-in;transition:.15s}
+  .photo-cell:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(60,90,180,.10)}
+  .photo-cell img{width:100%;height:120px;object-fit:cover;border-radius:7px;display:block;background:#eef1f6}
+  .photo-cell .meta{font-size:10.5px;color:#9aa4b5;margin-top:6px;text-align:center}
+  .stage-bars{margin:6px 0 16px}
+  .stage-bar{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .stage-name{width:90px;font-size:12px;color:#5b6472;text-align:right;flex-shrink:0}
+  .stage-track{flex:1;height:20px;background:#f0f2f6;border-radius:6px;overflow:hidden;position:relative}
+  .stage-fill{height:100%;background:linear-gradient(90deg,#4f7cff,#6b5cff);border-radius:6px;min-width:2px;transition:width .5s}
+  .stage-num{width:150px;font-size:11.5px;color:#8b95a7;flex-shrink:0;font-family:Consolas,monospace}
+  .modal-mask{position:fixed;inset:0;background:rgba(20,28,45,.55);display:flex;align-items:center;justify-content:center;z-index:50}
+  .modal{background:#fff;border-radius:14px;padding:20px;max-width:760px;width:92%;max-height:86vh;overflow:auto;box-shadow:0 24px 70px rgba(0,0,0,.25)}
+  .modal img{width:100%;display:block;border-radius:8px}
+  .modal .x{position:sticky;top:0;float:right;border:0;background:#f0f2f6;color:#5b6472;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer}
+  .confirm-mask{position:fixed;inset:0;background:rgba(20,28,45,.4);display:flex;align-items:center;justify-content:center;z-index:60}
+  .confirm-box{background:#fff;border-radius:12px;padding:22px 26px;width:330px;box-shadow:0 18px 50px rgba(0,0,0,.2)}
+  .confirm-box .t{font-size:14.5px;font-weight:700;color:#1f2733;margin-bottom:10px}
+  .confirm-box .d{font-size:12.5px;color:#5b6472;line-height:1.7;margin-bottom:18px}
+  .confirm-box .ops{display:flex;gap:10px;justify-content:flex-end}
+  .confirm-box button{border:0;border-radius:8px;padding:8px 18px;font-size:12.5px;cursor:pointer}
+  .confirm-box .no{background:#f0f2f6;color:#5b6472}
+  .confirm-box .yes{background:#e5484d;color:#fff}
+  .toast{position:fixed;top:22px;left:50%;transform:translateX(-50%);background:#2b3340;color:#fff;font-size:12.5px;padding:10px 22px;border-radius:9px;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,.18);opacity:0;transition:.25s}
+  .toast.show{opacity:1}
+  .toast.err{background:#e5484d}
+  .footer-note{margin-top:22px;text-align:center;font-size:11px;color:#b4bcc9}
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;border-radius:8px}
+  @media(max-width:720px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .panel{padding:14px}
+    th,td{padding:7px 6px;font-size:11.5px}
+    .stage-num{width:90px}
+    .tabs{flex-wrap:wrap;row-gap:4px}
+    .tabs button{padding:8px 13px;font-size:12.5px}
+    /* 移动端降列：用户表隐藏「最后登录/最近任务」，任务表隐藏「ID」，用量表隐藏「模型/缓存命中」 */
+    .tab-users table th:nth-child(4),.tab-users table td:nth-child(4),
+    .tab-users table th:nth-child(5),.tab-users table td:nth-child(5){display:none}
+    .tab-tasks table th:nth-child(1),.tab-tasks table td:nth-child(1){display:none}
+    .tab-usage table th:nth-child(2),.tab-usage table td:nth-child(2),
+    .tab-usage table th:nth-child(6),.tab-usage table td:nth-child(6){display:none}
+  }
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+  <!-- 未授权提示（无登录表单：管理员只能通过首页彩蛋解锁进入，前端不提供任何口令入口） -->
+  <div v-if="!authed" class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <div class="login-title">管理员入口已锁定</div>
+      <div class="login-sub">MONITOR · USERS · USAGE · ERRORS</div>
+      <div class="login-back"><a href="/">← 返回用户端，从彩蛋解锁进入</a></div>
+    </div>
+  </div>
+
+  <!-- 后台主界面 -->
+  <div v-else class="shell">
+    <header>
+      <div class="brand"><span class="dot"></span>简历智造 · 管理后台<small>RESUME STUDIO CONSOLE</small></div>
+      <div class="top-right">
+        <span class="session">会话：<b>admin</b></span>
+        <button class="logout-btn" @click="doLogout">退出后台</button>
+      </div>
+    </header>
+
+    <!-- 指标卡 -->
+    <section class="stats">
+      <div class="stat-card"><div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>注册用户</div><div class="stat-value">{{ stats.users }}</div><div class="stat-note">含 legacy 归档账号</div></div>
+      <div class="stat-card"><div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>简历任务</div><div class="stat-value">{{ stats.tasks }}</div><div class="stat-note">全部生成记录</div></div>
+      <div class="stat-card"><div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>成品版本</div><div class="stat-value">{{ stats.rewrites }}</div><div class="stat-note">共 {{ stats.versions }} 个版本</div></div>
+      <div class="stat-card"><div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>去重图片</div><div class="stat-value">{{ stats.photos }}</div><div class="stat-note">按内容去重后</div></div>
+      <div class="stat-card"><div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>累计 Token</div><div class="stat-value">{{ fmtNum(usage.total_tokens) }}</div><div class="stat-note">{{ usage.calls }} 次 AI 调用</div></div>
+      <div class="stat-card"><div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>今日 Token</div><div class="stat-value">{{ fmtNum(usage.today_tokens) }}</div><div class="stat-note">{{ usage.today_calls }} 次调用</div></div>
+      <div class="stat-card" :class="stats.errors > 0 ? 'warn' : 'ok'"><div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>错误事件</div><div class="stat-value">{{ stats.errors }}</div><div class="stat-note">共 {{ stats.events }} 条事件</div></div>
+      <div class="stat-card"><div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2.5 2.5"/></svg>DeepSeek 余额</div><div class="stat-value" :class="bal===null?'':(bal>0?'ok':'warn')">{{ bal===null ? '—' : '¥' + bal }}</div><div class="stat-note">{{ bal===null ? '查询失败（可能服务过载）' : '账户实时余额' }}</div></div>
+    </section>
+
+    <!-- tab -->
+    <nav class="tabs">
+      <button v-for="t in tabs" :key="t.key" :class="{on: tab===t.key}" @click="switchTab(t.key)">{{ t.name }}</button>
+    </nav>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">{{ curTitle }}<small>{{ curSub }}</small></div>
+        <button class="refresh-btn" @click="refreshAll">刷新数据</button>
+      </div>
+
+      <!-- 用户管理 -->
+      <div v-if="tab==='users'" class="tab-users">
+        <div v-if="!users.length" class="empty">暂无注册用户</div>
+        <div v-else class="tbl-wrap"><table>
+          <thead><tr><th>ID</th><th>用户</th><th>注册时间</th><th>最后登录</th><th>最近任务</th><th>任务数</th><th>图片数</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr v-for="u in users" :key="u.id">
+              <td class="mono">{{ u.id }}</td>
+              <td><span class="user-badge"><span class="avatar">{{ (u.nickname || u.username).slice(0,1) }}</span><b>{{ u.username }}</b><span class="tag gray" v-if="u.username==='legacy'">归档</span></span><div style="font-size:11px;color:#a5aebb">{{ u.nickname || '—' }}</div></td>
+              <td class="mono">{{ u.created_at }}</td>
+              <td class="mono">{{ u.last_login || '从未登录' }}</td>
+              <td class="mono">{{ u.last_task_at || '—' }}</td>
+              <td>{{ u.task_count }}</td>
+              <td>{{ u.photo_count }}</td>
+              <td><a class="link-btn danger" v-if="u.username!=='legacy'" @click="askDeleteUser(u)">删除</a><span v-else style="color:#c3cad6">—</span></td>
+            </tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <!-- 任务记录 -->
+      <div v-if="tab==='tasks'" class="tab-tasks">
+        <div v-if="!tasks.length" class="empty">暂无任务记录</div>
+        <div v-else class="tbl-wrap"><table>
+          <thead><tr><th>ID</th><th>用户</th><th>公司</th><th>岗位</th><th>创建时间</th><th>版本（可下载）</th></tr></thead>
+          <tbody>
+            <tr v-for="t in tasks" :key="t.id">
+              <td class="mono">{{ t.id }}</td>
+              <td><span class="tag" v-if="t.owner">{{ t.owner }}</span><span class="tag gray" v-else>游客</span></td>
+              <td>{{ t.company_name || '未填写' }}</td>
+              <td>{{ t.job_title || '未填写' }}</td>
+              <td class="mono">{{ t.created_at }}</td>
+              <td>
+                <div class="ver-list">
+                  <div class="ver-row" v-for="v in t.versions" :key="v.id">
+                    <span class="tag" :class="kindTag(v.kind)">{{ v.kind }}</span>
+                    <span class="t">{{ v.title }}</span>
+                    <a class="link-btn" v-if="v.kind==='rewritten'" :href="'/api/export/'+v.id+'?format=pdf&template=A'" target="_blank">PDF</a>
+                    <a class="link-btn" v-if="v.kind==='rewritten'" :href="'/api/export/'+v.id+'?format=png&template=A'" target="_blank">图</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <!-- 图片库 -->
+      <div v-if="tab==='photos'">
+        <div v-if="!photos.length" class="empty">暂无配图</div>
+        <div v-else class="photo-grid">
+          <div class="photo-cell" v-for="(p,i) in photos" :key="i" @click="zoomPhoto(p.url)">
+            <img :src="p.url" :alt="p.name" loading="lazy">
+            <div class="meta">{{ p.owner || '游客' }} · {{ p.created_at.slice(5,16) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 用量明细 -->
+      <div v-if="tab==='usage'" class="tab-usage">
+        <div v-if="usage.cache_hit_rate!=null" class="cache-line">输入缓存命中率：<b style="color:#16a34a">{{ usage.cache_hit_rate }}%</b>（命中 {{ fmtNum(usage.cache_hit_tokens) }} tok · 未命中 {{ fmtNum(usage.cache_miss_tokens) }} tok · 命中率越高越省钱）</div>
+        <div class="stage-bars">
+          <div class="stage-bar" v-for="(v,k) in usage.stages" :key="k">
+            <span class="stage-name">{{ stageName(k) }}</span>
+            <div class="stage-track"><div class="stage-fill" :style="{width: stagePct(k)+'%'}"></div></div>
+            <span class="stage-num">{{ v.calls }} 次 · {{ fmtNum(v.prompt + v.completion) }} tok</span>
+          </div>
+        </div>
+        <div v-if="!usage.detail.length" class="empty">暂无用量记录</div>
+        <div v-else class="tbl-wrap"><table>
+          <thead><tr><th>时间</th><th>模型</th><th>阶段</th><th>输入 tok</th><th>输出 tok</th><th>缓存命中</th><th>合计</th></tr></thead>
+          <tbody>
+            <tr v-for="(d,i) in usage.detail" :key="i">
+              <td class="mono">{{ d.ts }}</td>
+              <td class="mono">{{ d.model }}</td>
+              <td><span class="tag" :class="stageTag(d.stage)">{{ stageName(d.stage) }}</span></td>
+              <td class="mono">{{ d.prompt }}</td>
+              <td class="mono">{{ d.completion }}</td>
+              <td class="mono" :style="{color: d.cache_hit && d.cache_hit >= (d.cache_hit + d.cache_miss) * 0.5 ? '#16a34a' : 'inherit'}">{{ d.cache_hit||0 }} / {{ (d.cache_hit||0)+(d.cache_miss||0) }}</td>
+              <td class="mono" style="font-weight:600">{{ d.prompt + d.completion }}</td>
+            </tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <!-- 错误日志 -->
+      <div v-if="tab==='events'">
+        <div v-if="!events.length" class="empty">暂无事件记录（AI 出错 / 生成完成都会记录在这里）</div>
+        <div v-else class="tbl-wrap"><table>
+          <thead><tr><th>时间</th><th>级别</th><th>类型</th><th>用户</th><th>详情</th></tr></thead>
+          <tbody>
+            <tr v-for="(e,i) in events" :key="i">
+              <td class="mono">{{ e.event_time }}</td>
+              <td><span class="tag" :class="e.level==='error'?'red':'green'">{{ e.level }}</span></td>
+              <td><span class="tag gray">{{ e.etype }}</span></td>
+              <td>{{ e.user_name || '—' }}</td>
+              <td style="word-break:break-all;max-width:520px">{{ e.detail }}</td>
+            </tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+    <div class="footer-note">简历智造 · 管理后台 — 数据仅本机可见，管理员入口仅限首页彩蛋解锁进入</div>
+  </div>
+
+  <!-- 图片放大 -->
+  <div class="modal-mask" v-if="zoomUrl" @click.self="zoomUrl=''">
+    <div class="modal"><button class="x" @click="zoomUrl=''">✕</button><img :src="zoomUrl"></div>
+  </div>
+  <!-- 删除确认 -->
+  <div class="confirm-mask" v-if="delUser">
+    <div class="confirm-box">
+      <div class="t">删除用户「{{ delUser.username }}」？</div>
+      <div class="d">将永久删除该用户及其 {{ delUser.task_count }} 条任务、全部版本与上传图片，<b>不可恢复</b>。确认继续？</div>
+      <div class="ops"><button class="no" @click="delUser=null">取消</button><button class="yes" @click="confirmDelete">确认删除</button></div>
+    </div>
+  </div>
+  <div class="toast" :class="{show: toastMsg, err: toastErr}">{{ toastMsg }}</div>
+</div>
+
+<script src="/static/lib/vue.global.prod.js"></script>
+<script>
+const {createApp} = Vue;
+createApp({
+  data(){return{
+    authed: !!localStorage.getItem('rz_admin_token'),
+    tab: 'users',
+    tabs: [
+      {key:'users', name:'用户管理'},
+      {key:'tasks', name:'任务记录'},
+      {key:'photos', name:'图片库'},
+      {key:'usage', name:'用量明细'},
+      {key:'events', name:'错误日志'},
+    ],
+    stats: {users:0,tasks:0,versions:0,rewrites:0,photos:0,events:0,errors:0},
+    usage: {calls:0,total_tokens:0,today_tokens:0,today_calls:0,stages:{},detail:[]},
+    users: [], tasks: [], photos: [], events: [],
+    bal: null,
+    zoomUrl: '', delUser: null,
+    toastMsg: '', toastErr: false, _toastTimer: null,
+  }},
+  computed:{
+    curTitle(){const t=this.tabs.find(x=>x.key===this.tab);return t?t.name:''},
+    curSub(){
+      const m={
+        users:'全部注册用户与数据量',
+        tasks:'每次生成的完整记录与成品下载',
+        photos:'全部配图（按内容去重）',
+        usage:'每次 AI 调用的 Token 与耗时',
+        events:'AI 错误与系统事件',
+      };
+      return m[this.tab]||'';
+    }
+  },
+  methods:{
+    api(path){
+      return fetch(path,{headers:{'X-Admin-Token':localStorage.getItem('rz_admin_token')}})
+        .then(r=>{if(r.status===401){this.authed=false;localStorage.removeItem('rz_admin_token');throw new Error('会话过期')}return r.json()});
+    },
+    toast(msg,err){this.toastMsg=msg;this.toastErr=!!err;clearTimeout(this._toastTimer);this._toastTimer=setTimeout(()=>this.toastMsg='',2600)},
+    fmtNum(n){return (n||0)>=10000?(n/10000).toFixed(1)+' 万':(n||0).toLocaleString()},
+    stageName(k){
+      const m={analysis:'匹配分析',rewrite:'简历改写',intel:'公司情报',meta:'信息提取',ocr:'图片识别',misc:'其他'};
+      return m[k]||k;
+    },
+    stageTag(k){return {analysis:'',rewrite:'green',intel:'orange',meta:'gray',ocr:'',misc:'gray'}[k]||''},
+    kindTag(k){
+      const m={original:'gray',analysis:'',intel:'orange',rewritten:'green'};
+      return m[k]||'gray';
+    },
+    stagePct(k){
+      const total=Object.values(this.usage.stages||{}).reduce((a,v)=>a+v.prompt+v.completion,0);
+      if(!total)return 0;
+      const v=this.usage.stages[k]||{prompt:0,completion:0};
+      return Math.max(2, Math.round((v.prompt+v.completion)/total*100));
+    },
+    doLogout(){
+      // 退出后台：注销会话后直接返回主站欢迎页（而非停留在登录页）
+      fetch('/api/admin/logout',{method:'POST',headers:{'X-Admin-Token':localStorage.getItem('rz_admin_token')}}).catch(()=>{});
+      localStorage.removeItem('rz_admin_token');
+      location.href='/';
+    },
+    switchTab(k){this.tab=k;this.loadTab(k)},
+    loadTab(k){
+      if(k==='users')this.api('/api/admin/users').then(j=>this.users=j.users||[]).catch(()=>{});
+      if(k==='tasks')this.api('/api/admin/tasks').then(j=>this.tasks=j.tasks||[]).catch(()=>{});
+      if(k==='photos')this.api('/api/admin/photos').then(j=>this.photos=j.photos||[]).catch(()=>{});
+      if(k==='usage')this.api('/api/admin/usage').then(j=>{this.usage=j}).catch(()=>{});
+      if(k==='events')this.api('/api/admin/events').then(j=>this.events=j.events||[]).catch(()=>{});
+    },
+    refreshAll(){
+      this.api('/api/admin/stats').then(j=>this.stats=j).catch(()=>{});
+      this.api('/api/admin/usage').then(j=>this.usage=j).catch(()=>{});
+      this.api('/api/admin/balance').then(j=>{this.bal=j.balance===null||j.balance===undefined?null:(j.balance.total_balance??null)}).catch(()=>{this.bal=null});
+      this.loadTab(this.tab);
+    },
+    zoomPhoto(url){this.zoomUrl=url},
+    askDeleteUser(u){this.delUser=u},
+    confirmDelete(){
+      const u=this.delUser;
+      fetch('/api/admin/users/'+u.id+'/delete',{method:'POST',headers:{'X-Admin-Token':localStorage.getItem('rz_admin_token')}})
+        .then(r=>r.json())
+        .then(j=>{
+          if(j.ok){this.toast('已删除用户 '+u.username);this.delUser=null;this.loadTab('users');this.refreshAll()}
+          else{this.toast(j.detail||'删除失败',true);this.delUser=null}
+        })
+        .catch(()=>{this.toast('删除请求失败',true);this.delUser=null});
+    },
+  },
+  mounted(){
+    if(this.authed)this.refreshAll();
+    setInterval(()=>{if(this.authed){this.api('/api/admin/stats').then(j=>this.stats=j).catch(()=>{})}},60000);
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

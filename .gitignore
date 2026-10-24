@@ -1,0 +1,33 @@
+# ===== 环境与密钥（绝对不能公开）=====
+.env
+_server-key/
+
+# ===== 运行时数据（含真实用户数据、上传文件、数据库）=====
+data/
+
+# ===== 本地备份目录 =====
+_backup-*/
+
+# ===== 开发期测试残留（调试脚本/日志/检查结果）=====
+_*.py
+_*.txt
+_*.log
+*.log
+clean_check.txt
+lan_check.txt
+win_check.txt
+sample_resume.txt
+
+# ===== 前端自检输出 / 备份文件 / 其他项目残留 =====
+_shots/
+*.bak-*
+frontend/_qingyan_server_evidence.js
+frontend/index.html.*流程*
+
+# ===== 系统与编辑器 =====
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+__pycache__/
+*.pyc

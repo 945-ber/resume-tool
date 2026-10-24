@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-docx
+PyMuPDF
+requests
+beautifulsoup4
+lxml
+rapidocr-onnxruntime
+Pillow
+playwright
